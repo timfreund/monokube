@@ -35,7 +35,7 @@ find a file named `./cluster/inventory`.  I'm not going to force you
 to use Ansible to configure the hosts, but I'm using Ansible so the
 project generates an Ansible inventory file.  Maybe that becomes
 a configuration option in the future.  If you do have ansible installed,
-go into the cluster directory and run
+go into the cluster directory and run `ansible -i inventory all -a w`
 
 Now do what you need to do to test a Kubernetes installation.
 
