@@ -1,0 +1,18 @@
+#cloud-config
+
+manage_etc_hosts: localhost
+hostname: <%= node_name %>
+
+password: thisisterrible
+chpasswd: { expire: False }
+ssh_pwauth: True
+ssh_authorized_keys:
+    - <%= ssh_public_key %>
+
+users:
+  - default
+  - name: monokube
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - <%= ssh_public_key %>
+    sudo: ALL=(ALL) NOPASSWD:ALL
