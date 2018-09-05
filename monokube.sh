@@ -2,6 +2,13 @@
 
 . monokube.env
 
+for command in cloud-localds erb virsh; do
+    if ! which $command ; then
+        echo "ERROR: Command not found: ${command}.  Exiting"
+        exit 1
+    fi
+done
+
 IMAGE_NAME=`echo ${IMAGE_URL} | sed -e 's|.*/||'`
 
 pool_count=`virsh pool-list | grep ${LIBVIRT_POOL_NAME} | wc -l`
@@ -18,11 +25,19 @@ if [ ${net_count} -eq 0 ]; then
     exit 1
 fi
 
+if [ ! -d ./cluster ];
+then
+    mkdir -p ./cluster/.ssh
+    chmod 700 ./cluster/.ssh
+    ssh-keygen -N "" -C "monokube" -f ./cluster/.ssh/id_rsa > /dev/null
+fi
+
 img_count=`virsh vol-list ${LIBVIRT_POOL_NAME} | grep ${IMAGE_NAME} | wc -l`
 if [ ${img_count} -eq 0 ]; then
-    if [ ! -f ${IMAGE_NAME} ]
+    if [ ! -f ./cloud-images/${IMAGE_NAME} ]
     then
         echo "Downloading source image"
+        mkdir -p ./cloud-images
         curl --output ${IMAGE_NAME} ${IMAGE_URL}
     fi
     echo "Creating source volume from image"
@@ -34,17 +49,28 @@ for idx in `seq 1 ${VM_COUNT}`;
 do
     node_name=monokube-${idx}
     node_img=${node_name}.img
+    node_userdata=${node_name}-userdata.img
 
     dom_count=`virsh list --all | grep ${node_name} | wc -l`
     if [ ${dom_count} -eq 0 ]
     then
         echo "Building ${node_name}"
+
+        mkdir -p cluster/${node_name}/cloud-init
+        erb node_name="${node_name}" ssh_public_key="`cat ./cluster/.ssh/id_rsa.pub`" cloud-init/userdata.txt.erb > cluster/${node_name}/cloud-init/userdata.txt
+        echo "instance-id: $(uuidgen)" > cluster/${node_name}/cloud-init/metadata.txt
+        cloud-localds cluster/${node_name}/${node_userdata} cluster/${node_name}/cloud-init/userdata.txt cluster/${node_name}/cloud-init/metadata.txt
+
+        virsh vol-create-as --pool ${LIBVIRT_POOL_NAME} --name ${node_userdata} --capacity 0
+        virsh vol-upload --vol ${node_userdata} --file cluster/${node_name}/${node_userdata} --pool ${LIBVIRT_POOL_NAME}
+
         virsh vol-clone --vol ${IMAGE_NAME} --newname ${node_img} --pool default
         virsh vol-resize ${node_img} ${VM_DISK}G --pool ${LIBVIRT_POOL_NAME}
         virt-install --name ${node_name} \
                      --memory ${VM_MEMORY} --vcpus ${VM_CPU} \
                      --import \
                      --disk vol=${LIBVIRT_POOL_NAME}/${node_img},bus=sata \
+                     --disk vol=${LIBVIRT_POOL_NAME}/${node_userdata},device=cdrom \
                      --check path_in_use=off \
                      --network network=${LIBVIRT_NET_NAME} \
                      --noautoconsole
@@ -60,4 +86,4 @@ do
 done    
 
 # --serial file,path=/tmp/${name}.log \
-    # --disk vol=${LIBVIRT_POOL_NAME}/sonicpi-userdata.img,device=cdrom \
+
