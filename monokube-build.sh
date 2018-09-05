@@ -38,7 +38,7 @@ if [ ${img_count} -eq 0 ]; then
     then
         echo "Downloading source image"
         mkdir -p ./cloud-images
-        curl --output ${IMAGE_NAME} ${IMAGE_URL}
+        curl --output ./cloud-images/${IMAGE_NAME} ${IMAGE_URL}
     fi
     echo "Creating source volume from image"
     virsh vol-create-as --pool ${LIBVIRT_POOL_NAME} --name ${IMAGE_NAME} --capacity 0 --format qcow2
