@@ -42,7 +42,7 @@ if [ ${img_count} -eq 0 ]; then
     fi
     echo "Creating source volume from image"
     virsh vol-create-as --pool ${LIBVIRT_POOL_NAME} --name ${IMAGE_NAME} --capacity 0 --format qcow2
-    virsh vol-upload --vol ${IMAGE_NAME} --file ${IMAGE_NAME} --pool ${LIBVIRT_POOL_NAME}
+    virsh vol-upload --vol ${IMAGE_NAME} --file ./cloud-images/${IMAGE_NAME} --pool ${LIBVIRT_POOL_NAME}
 fi
 
 for idx in `seq 1 ${VM_COUNT}`;
