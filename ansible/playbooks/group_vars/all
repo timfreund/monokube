@@ -1,0 +1,7 @@
+# -*- mode: yaml -*-
+telegraf_influx_host: "{{ ansible_default_ipv4.gateway }}"
+telegraf_agent_output:
+  - type: influxdb
+    config:
+      - urls = ["http://{{ telegraf_influx_host }}:8086"]
+      - database = "telegraf"

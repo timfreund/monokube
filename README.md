@@ -39,6 +39,11 @@ configure ansible run `cd ./ansible && ./setup.sh`.  Once done, run
 `./venv/bin/activate` followed by `ansible all -a w` to test a command.
 There's a README.md in the ansible directory with more information.
 
+If you want to keep tabs on your hosts while you work, check out:
+`./metrics/start-influxdata-sandbox.sh` and make sure to install
+`telegraf` on the nodes.  (It's included in the
+./ansible/playbooks/bootstrap.yml playbook)
+
 Now do what you need to do to test a Kubernetes installation.
 
 Once you're done, you can run `./monokube-destroy.sh`.
