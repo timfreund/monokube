@@ -30,12 +30,14 @@ should be able to log in with the username `monokube` and the
 `./cluster/.ssh/id_rsa` key.  Too bad you don't know the machine IP
 addresses yet.
 
-Now run `./monokube-update-metadata.sh` and once complete you should
+Run `./monokube-update-metadata.sh` and once complete you should
 find a file named `./cluster/inventory`.  I'm not going to force you
 to use Ansible to configure the hosts, but I'm using Ansible so the
 project generates an Ansible inventory file.  Maybe that becomes
-a configuration option in the future.  If you do have ansible installed,
-go into the cluster directory and run `ansible -i inventory all -a w`
+a configuration option in the future.  For now, if you'd like to
+configure ansible run `cd ./ansible && ./setup.sh`.  Once done, run
+`./venv/bin/activate` followed by `ansible all -a w` to test a command.
+There's a README.md in the ansible directory with more information.
 
 Now do what you need to do to test a Kubernetes installation.
 
