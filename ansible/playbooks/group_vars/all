@@ -5,3 +5,15 @@ telegraf_agent_output:
     config:
       - urls = ["http://{{ telegraf_influx_host }}:8086"]
       - database = "telegraf"
+
+telegraf_plugins_default:
+  - plugin: cpu
+    config:
+      - percpu = true
+  - plugin: disk
+  - plugin: io
+  - plugin: mem
+  - plugin: system
+  - plugin: swap
+  - plugin: netstat
+  - plugin: docker

@@ -3,5 +3,22 @@
   roles:
     - geerlingguy.docker
     - dj-wasabi.telegraf
+  tasks:
+    - name: Add monokube to groups
+      user:
+        name: monokube
+        group: monokube
+        groups:
+          - docker
+    - name: Add telegraf to groups
+      user:
+        name: telegraf
+        group: telegraf
+        groups:
+          - docker
+    - name: restart telegraf
+      service:
+        name: telegraf
+        state: restarted
   become: true
 ...
