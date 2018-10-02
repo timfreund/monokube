@@ -21,7 +21,7 @@ fi
 net_count=`virsh net-list | grep ${LIBVIRT_NET_NAME} | wc -l`
 if [ ${net_count} -eq 0 ]; then
     echo "Your chosen network (${LIBVIRT_NET_NAME}) does not exist."
-    echo "Create it with 'virsh pool-create' or 'virt-manager'"
+    echo "Create it with 'virsh net-create' or 'virt-manager'"
     exit 1
 fi
 
@@ -38,7 +38,7 @@ if [ ${img_count} -eq 0 ]; then
     then
         echo "Downloading source image"
         mkdir -p ./cloud-images
-        curl --output ./cloud-images/${IMAGE_NAME} ${IMAGE_URL}
+        curl -L --output ./cloud-images/${IMAGE_NAME} ${IMAGE_URL}
     fi
     echo "Creating source volume from image"
     virsh vol-create-as --pool ${LIBVIRT_POOL_NAME} --name ${IMAGE_NAME} --capacity 0 --format qcow2
