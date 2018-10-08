@@ -2,7 +2,7 @@
 
 . monokube.env
 
-for command in cloud-localds erb virsh; do
+for command in genisoimage erb virsh virt-install; do
     if ! which $command ; then
         echo "ERROR: Command not found: ${command}.  Exiting"
         exit 1
@@ -57,9 +57,14 @@ do
         echo "Building ${node_name}"
 
         mkdir -p cluster/${node_name}/cloud-init
-        erb node_name="${node_name}" ssh_public_key="`cat ./cluster/.ssh/id_rsa.pub`" cloud-init/userdata.txt.erb > cluster/${node_name}/cloud-init/userdata.txt
-        echo "instance-id: $(uuidgen)" > cluster/${node_name}/cloud-init/metadata.txt
-        cloud-localds cluster/${node_name}/${node_userdata} cluster/${node_name}/cloud-init/userdata.txt cluster/${node_name}/cloud-init/metadata.txt
+        erb node_name="${node_name}" ssh_public_key="`cat ./cluster/.ssh/id_rsa.pub`" cloud-init/user-data.erb > cluster/${node_name}/cloud-init/user-data
+        echo "instance-id: $(uuidgen)" > cluster/${node_name}/cloud-init/meta-data
+        # cloud-locads was used in previous versions of this script,
+        # but that command is not available on RH variant systems. The
+        # command is kept here as a reference for Debian user.  The genisoimage
+        # command will work for all host operating systems
+        # cloud-localds cluster/${node_name}/${node_userdata} cluster/${node_name}/cloud-init/user-data cluster/${node_name}/cloud-init/meta-data
+        genisoimage -output cluster/${node_name}/${node_userdata} -volid cidata -joliet -rock cluster/${node_name}/cloud-init/user-data cluster/${node_name}/cloud-init/meta-data
 
         virsh vol-create-as --pool ${LIBVIRT_POOL_NAME} --name ${node_userdata} --capacity 0
         virsh vol-upload --vol ${node_userdata} --file cluster/${node_name}/${node_userdata} --pool ${LIBVIRT_POOL_NAME}
