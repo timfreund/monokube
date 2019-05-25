@@ -1,0 +1,3 @@
+[submodule "metrics/influxdata-sandbox"]
+	path = metrics/influxdata-sandbox
+	url = https://github.com/influxdata/sandbox.git
