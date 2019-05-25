@@ -11,6 +11,15 @@ that's fine, but I don't love blinking LEDs that much and I'm already
 sitting on plenty of gear: the smallest machine I use on a daily basis
 has 16GB of RAM, and the largest is totally ridiculous.
 
+## Prep
+
+You may need to install some prerequisite applications.  Give the following a shot:
+
+`sudo ./INSTALL-PREREQS.sh`
+
+The script only supports Debian and Red Hat based systems today, and
+very loosely at that.  Let me know how we can make that better.
+
 ## Use it
 
 Open `monokube.env` and update the variables as necessary.  There are
